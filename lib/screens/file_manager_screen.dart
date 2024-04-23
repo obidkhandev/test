@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,12 +16,7 @@ class FileManagerScreen extends StatefulWidget {
 
 class _FileManagerScreenState extends State<FileManagerScreen> {
   int activeCategory = 0;
-  List<String> categoryName = [
-    "Foydali",
-    "Badiiy",
-    "Dasturlash",
-    "Sarguzasht"
-  ];
+  List<String> categoryName = ["Foydali", "Badiiy", "Dasturlash", "Sarguzasht"];
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +24,7 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("File Managaer Screen"),
+        backgroundColor: Color(0xff29BB89),
       ),
       body: ListView(padding: const EdgeInsets.all(24), children: [
         Text(
@@ -38,12 +33,7 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => SearchScreen(),
-              ),
-            );
+            showSearch(context: context, delegate: CustomSearchDelegate());
           },
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 20),
@@ -91,7 +81,7 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
                   child: CategoryItemCard(
                     categoryName: categoryName[index],
                     color: activeCategory == index
-                        ? Colors.blue
+                        ? Color(0xff29BB89)
                         : Colors.grey.shade200,
                     textColor:
                         activeCategory == index ? Colors.white : Colors.black,
@@ -102,15 +92,19 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
         Expanded(
             child: Column(
           children: List.generate(
-            context.read<FileRepository>().files.where((file) =>
-            categoryName[activeCategory] == file.category).length,
+            context
+                .read<FileRepository>()
+                .files
+                .where((file) => categoryName[activeCategory] == file.category)
+                .length,
             (index) {
               final List<FileDataModel> activeCategoryFiles = context
-                  .read<FileRepository>().files
-                  .where((file) => categoryName[activeCategory] == file.category)
+                  .read<FileRepository>()
+                  .files
+                  .where(
+                      (file) => categoryName[activeCategory] == file.category)
                   .toList();
-              FileDataModel fileDataModel =
-                  activeCategoryFiles[index];
+              FileDataModel fileDataModel = activeCategoryFiles[index];
               FileManagerBloc fileManagerBloc = FileManagerBloc();
 
               return BlocProvider.value(
@@ -118,38 +112,71 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
                 child: BlocBuilder<FileManagerBloc, FileManagerState>(
                   builder: (context, state) {
                     debugPrint("CURRENT MB: ${state.progress}");
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(fileDataModel.fileName
-                          ),
-                          subtitle: Text(fileDataModel.fileUrl),
-                          trailing: IconButton(
-                            onPressed: () async {
-                              if (state.newFileLocation.isEmpty) {
-                                fileManagerBloc.add(
-                                  DownloadFileEvent(
-                                    fileDataModel: fileDataModel,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    image: DecorationImage(
+                                      image: NetworkImage(fileDataModel.iconPath),
+                                      fit: BoxFit.cover,
+                                    )),
+                              ),
+                              SizedBox(width: 20),
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 40,
+                                        width: 150,
+                                        child: Text(
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          fileDataModel.fileName,style: TextStyle(fontWeight: FontWeight.bold),),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Visibility(
+                                        visible: state.progress != 0,
+                                        child: LinearProgressIndicator(
+                                          value: state.progress,
+                                          backgroundColor: Colors.grey,
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                );
-                              } else {
-                                await OpenFilex.open(state.newFileLocation);
-                              }
-                            },
-                            icon: Icon(
-                              Icons.download,
-                              color: Colors.blue,
-                            ),
+                                ),
+                              ),
+                              Spacer(),
+                              IconButton(
+                                onPressed: () async {
+                                  if (state.newFileLocation.isEmpty) {
+                                    fileManagerBloc.add(
+                                      DownloadFileEvent(
+                                        fileDataModel: fileDataModel,
+                                      ),
+                                    );
+                                  } else {
+                                    await OpenFilex.open(state.newFileLocation);
+                                  }
+                                },
+                                icon: Icon(Icons.download),
+                                color: Colors.blue,
+                              )
+                            ],
                           ),
-                        ),
-                        Visibility(
-                          visible: state.progress != 0,
-                          child: LinearProgressIndicator(
-                            value: state.progress,
-                            backgroundColor: Colors.grey,
-                          ),
-                        )
-                      ],
+                        ],
+                      ),
                     );
                   },
                 ),
