@@ -1,33 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_pro/data/repo/file_repo.dart';
-import 'package:test_pro/screens/file_manager_screen.dart';
-import 'package:test_pro/screens/on_board_screen.dart';
-import 'package:test_pro/services/file_manager_sevice.dart';
-
+import 'package:flutter/services.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  FileManagerService();
-
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Device Info'),
+        ),
+        body: Center(
+          child: DeviceInfoWidget(),
+        ),
+      ),
+    );
+  }
+}
+
+class DeviceInfoWidget extends StatefulWidget {
+  @override
+  _DeviceInfoWidgetState createState() => _DeviceInfoWidgetState();
+}
+
+class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
+  static const platform = MethodChannel('com.example.device_info_channel');
+
+  String deviceType = 'Unknown';
+  String deviceModel = 'Unknown';
+  String deviceBrand = 'Unknown';
+  String osVersion = 'Unknown';
+  String batteryLevel = 'Unknown';
+
+  @override
+  void initState() {
+    super.initState();
+    _getDeviceInfo();
+  }
+
+  Future<void> _getDeviceInfo() async {
+    try {
+      final dynamic result = await platform.invokeMethod('getDeviceInfo');
+      final Map<String, dynamic> deviceInfo = Map<String, dynamic>.from(result);
+      setState(() {
+        deviceType = deviceInfo['deviceType'] ?? 'Unknown';
+        deviceModel = deviceInfo['deviceModel'] ?? 'Unknown';
+        deviceBrand = deviceInfo['deviceBrand'] ?? 'Unknown';
+        osVersion = deviceInfo['osVersion'] ?? 'Unknown';
+        batteryLevel = deviceInfo['batteryLevel']?.toString() ?? 'Unknown'; // Convert to string
+      });
+    } on PlatformException catch (e) {
+      print("Failed to get device info: '${e.message}'.");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider(create: (_) => FileRepository()),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Device Type: $deviceType'),
+        Text('Device Model: $deviceModel'),
+        Text('Device Brand: $deviceBrand'),
+        Text('OS Version: $osVersion'),
+        Text('Battery Level: $batteryLevel'),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: false),
-        home: OnBoardScreen(),
-      ),
     );
   }
 }
