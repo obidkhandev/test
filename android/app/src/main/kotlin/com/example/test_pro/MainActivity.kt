@@ -21,7 +21,7 @@ class MainActivity: FlutterActivity() {
             if (call.method == "getDeviceInfo") {
                 val deviceInfo = getDeviceInfo()
                 result.success(deviceInfo)
-            } else {
+            } else if(call.method == 'get ') {
                 result.notImplemented()
             }
         }
