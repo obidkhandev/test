@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_pro/bloc/currency_event.dart';
 import 'package:test_pro/bloc/currency_state.dart';
-import 'package:test_pro/data/local/local_db.dart';
-import 'package:test_pro/data/models/currency_model.dart';
 import 'package:test_pro/data/remote/api_provider.dart';
-import 'package:test_pro/data/remote/network_response.dart';
+import 'package:update_data/currency_model.dart';
+import 'package:update_data/local_db.dart';
+import 'package:update_data/network_response.dart';
+import 'package:update_data/update_local_data.dart';
 
 class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   CurrencyBloc() : super(CurrencyInitialState()) {
@@ -42,7 +43,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
       for (CurrencyModel currencyModelLocal in localCurrencies) {
         for (CurrencyModel currencyModel in (state as CurrencySuccessState).currencies) {
           if (currencyModelLocal.spotTheDifference(currencyModel: currencyModel)) {
-            await LocalDatabase.updateCurrency(currencyModel: currencyModel);
+            await updateLocalDB(currencyModel);
             break;
           }
         }

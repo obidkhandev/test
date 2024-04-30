@@ -5,7 +5,7 @@ import 'package:test_pro/bloc/connectvity/connectivity_state.dart';
 import 'package:test_pro/bloc/currency_bloc.dart';
 import 'package:test_pro/bloc/currency_event.dart';
 import 'package:test_pro/bloc/currency_state.dart';
-import 'package:test_pro/data/models/currency_model.dart';
+import 'package:update_data/currency_model.dart';
 
 import '../../cubit/currency_muti_state/currency_multi_state.dart';
 

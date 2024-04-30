@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:test_pro/data/models/currency_model.dart';
-import 'package:test_pro/data/remote/network_response.dart';
+import 'package:update_data/currency_model.dart';
+import 'package:update_data/network_response.dart';
 
 class LocalDatabase {
   static final databaseInstance = LocalDatabase._();
@@ -56,7 +55,6 @@ class LocalDatabase {
 
       await db.insert("CurrencyTable", currencyModel.toJson());
     } catch (_) {
-      debugPrint(_.toString());
       networkResponse.errorText = "Hato insertda :(";
     }
 
@@ -71,15 +69,13 @@ class LocalDatabase {
       networkResponse.data =
           json.map((e) => CurrencyModel.fromJson(e)).toList();
     } catch (_) {
-      networkResponse.errorText = "Error Call Metod :(";
+      networkResponse.errorText = "Error Call Metod";
     }
     return networkResponse;
   }
 
   static updateCurrency({required CurrencyModel currencyModel}) async {
     final db = await databaseInstance.database;
-    // debugPrint(noteModel.id.toString());
-
     await db.update("CurrencyTable", currencyModel.toJson(),
         where: "code = ?", whereArgs: [currencyModel.code]);
   }

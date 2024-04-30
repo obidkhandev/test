@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_pro/cubit/currency_single_state/currency_single_state_state.dart';
-import 'package:test_pro/data/local/local_db.dart';
-import 'package:test_pro/data/models/currency_model.dart';
+import 'package:update_data/currency_model.dart';
+import 'package:update_data/local_db.dart';
+import 'package:update_data/update_local_data.dart';
 import 'package:test_pro/data/remote/api_provider.dart';
-import 'package:test_pro/data/remote/network_response.dart';
+import 'package:update_data/network_response.dart';
 
 class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
   CurrencyCubitSingl()
@@ -59,7 +60,7 @@ class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
           for (CurrencyModel currencyModel in c) {
             if (currencyModelLocal.spotTheDifference(
                 currencyModel: currencyModel)) {
-              await LocalDatabase.updateCurrency(currencyModel: currencyModel);
+             await updateLocalDB(currencyModel);
               break;
             }
           }

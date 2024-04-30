@@ -1,4 +1,5 @@
-import 'package:test_pro/data/models/currency_model.dart';
+import 'package:update_data/currency_model.dart';
+
 
 abstract class CurrencyState {}
 

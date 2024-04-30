@@ -1,14 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_pro/cubit/currency_muti_state/currency_multi_state.dart';
-import 'package:test_pro/data/local/local_db.dart';
-import 'package:test_pro/data/models/currency_model.dart';
+import 'package:update_data/currency_model.dart';
+import 'package:update_data/local_db.dart';
+import 'package:update_data/update_local_data.dart';
 import 'package:test_pro/data/remote/api_provider.dart';
-import 'package:test_pro/data/remote/network_response.dart';
-
+import 'package:update_data/network_response.dart';
 
 class CurrenciesMultiStateCubit extends Cubit<CurrenciesMultiState> {
   CurrenciesMultiStateCubit() : super(CurrenciesInitialMultiState()) {}
-
 
   static List<CurrencyModel> localCurrencies = [];
   static bool updateData = true;
@@ -23,10 +22,9 @@ class CurrenciesMultiStateCubit extends Cubit<CurrenciesMultiState> {
     changeData();
   }
 
-
   Future<void> getLocalData() async {
     NetworkResponse networkResponse =
-    await LocalDatabase.getAllQrScannerModels();
+        await LocalDatabase.getAllQrScannerModels();
     if (networkResponse.errorText.isEmpty) {
       localCurrencies = networkResponse.data;
     }
@@ -35,15 +33,21 @@ class CurrenciesMultiStateCubit extends Cubit<CurrenciesMultiState> {
   Future<void> changeData() async {
     await getLocalData();
     if (localCurrencies.isEmpty) {
-      localCurrencies = (state is CurrenciesSuccessMultiState) ? (state as CurrenciesSuccessMultiState).currencies : [];
+      localCurrencies = (state is CurrenciesSuccessMultiState)
+          ? (state as CurrenciesSuccessMultiState).currencies
+          : [];
       for (CurrencyModel currencyModel in localCurrencies) {
         await LocalDatabase.insertQrScannerModel(currencyModel);
       }
-    } else if (state is CurrenciesSuccessMultiState && (state as CurrenciesSuccessMultiState).currencies.isNotEmpty && updateData) {
+    } else if (state is CurrenciesSuccessMultiState &&
+        (state as CurrenciesSuccessMultiState).currencies.isNotEmpty &&
+        updateData) {
       for (CurrencyModel currencyModelLocal in localCurrencies) {
-        for (CurrencyModel currencyModel in (state as CurrenciesSuccessMultiState).currencies) {
-          if (currencyModelLocal.spotTheDifference(currencyModel: currencyModel)) {
-            await LocalDatabase.updateCurrency(currencyModel: currencyModel);
+        for (CurrencyModel currencyModel
+            in (state as CurrenciesSuccessMultiState).currencies) {
+          if (currencyModelLocal.spotTheDifference(
+              currencyModel: currencyModel)) {
+            await updateLocalDB(currencyModel);
             break;
           }
         }
@@ -53,15 +57,13 @@ class CurrenciesMultiStateCubit extends Cubit<CurrenciesMultiState> {
     emit(CurrenciesSuccessMultiState(currencies: localCurrencies));
   }
 
-
   errorConnectInternet() async {
     if (localCurrencies.isEmpty) {
       NetworkResponse networkResponse =
-      await LocalDatabase.getAllQrScannerModels();
+          await LocalDatabase.getAllQrScannerModels();
       emit(CurrenciesSuccessMultiState(currencies: networkResponse.data));
     } else {
       emit(CurrenciesSuccessMultiState(currencies: localCurrencies));
     }
   }
-
 }

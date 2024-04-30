@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_pro/bloc/connectvity/connectivity_bloc.dart';
 import 'package:test_pro/bloc/connectvity/connectivity_state.dart';
 import 'package:test_pro/cubit/currency_muti_state/currency_multi_cubit.dart';
-import 'package:test_pro/data/models/currency_model.dart';
+import 'package:update_data/currency_model.dart';
 
 import '../../cubit/currency_muti_state/currency_multi_state.dart';
 
