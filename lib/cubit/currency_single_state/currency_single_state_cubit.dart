@@ -35,7 +35,7 @@ class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
 
   Future<void> getLocalData() async {
     NetworkResponse networkResponse =
-    await LocalDatabase.getAllQrScannerModels();
+    await LocalDatabase.getAllCurrency();
     if (networkResponse.errorText.isEmpty) {
       localCurrencies = networkResponse.data;
     }
@@ -45,14 +45,14 @@ class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
     if (localCurrencies.isEmpty) {
       localCurrencies = state.currencyModels;
       for (CurrencyModel currencyModel in localCurrencies) {
-        await LocalDatabase.insertQrScannerModel(currencyModel);
+        await LocalDatabase.insertCurrency(currencyModel);
       }
     }
     if (state.currencyModels.isNotEmpty) {
       if (updateData) {
         if (localCurrencies.isEmpty) {
           NetworkResponse networkResponse =
-          await LocalDatabase.getAllQrScannerModels();
+          await LocalDatabase.getAllCurrency();
           localCurrencies = networkResponse.data;
         }
         List<CurrencyModel> c = state.currencyModels;
@@ -71,7 +71,7 @@ class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
     if (state.currencyModels.isEmpty) {
       if (localCurrencies.isEmpty) {
         NetworkResponse networkResponse =
-        await LocalDatabase.getAllQrScannerModels();
+        await LocalDatabase.getAllCurrency();
         localCurrencies = networkResponse.data;
       }
 
@@ -83,7 +83,7 @@ class CurrencyCubitSingl extends Cubit<CurrencyCubitSinglState> {
   errorConnectInternet() async {
     if (localCurrencies.isEmpty) {
       NetworkResponse networkResponse =
-      await LocalDatabase.getAllQrScannerModels();
+      await LocalDatabase.getAllCurrency();
       emit(state.copyWith(
         currencyModels: networkResponse.data,
         loading: false,

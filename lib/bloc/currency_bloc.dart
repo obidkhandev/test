@@ -26,7 +26,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   }
 
   Future<void> _getLocalData() async {
-    NetworkResponse networkResponse = await LocalDatabase.getAllQrScannerModels();
+    NetworkResponse networkResponse = await LocalDatabase.getAllCurrency();
     if (networkResponse.errorText.isEmpty) {
       localCurrencies = networkResponse.data;
     }
@@ -37,7 +37,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     if (localCurrencies.isEmpty) {
       localCurrencies = (state is CurrencySuccessState) ? (state as CurrencySuccessState).currencies : [];
       for (CurrencyModel currencyModel in localCurrencies) {
-        await LocalDatabase.insertQrScannerModel(currencyModel);
+        await LocalDatabase.insertCurrency(currencyModel);
       }
     } else if (state is CurrencySuccessState && (state as CurrencySuccessState).currencies.isNotEmpty && updateData) {
       for (CurrencyModel currencyModelLocal in localCurrencies) {
@@ -55,7 +55,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
 
   Future<void> errorConnectInternet() async {
     if (localCurrencies.isEmpty) {
-      NetworkResponse networkResponse = await LocalDatabase.getAllQrScannerModels();
+      NetworkResponse networkResponse = await LocalDatabase.getAllCurrency();
       emit(CurrencySuccessState(currencies: networkResponse.data));
     } else {
       emit(CurrencySuccessState(currencies: localCurrencies));

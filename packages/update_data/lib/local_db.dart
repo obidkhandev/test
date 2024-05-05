@@ -47,7 +47,7 @@ class LocalDatabase {
     )''');
   }
 
-  static Future<NetworkResponse> insertQrScannerModel(
+  static Future<NetworkResponse> insertCurrency(
       CurrencyModel currencyModel) async {
     NetworkResponse networkResponse = NetworkResponse();
     try {
@@ -61,7 +61,7 @@ class LocalDatabase {
     return networkResponse;
   }
 
-  static Future<NetworkResponse> getAllQrScannerModels() async {
+  static Future<NetworkResponse> getAllCurrency() async {
     NetworkResponse networkResponse = NetworkResponse();
     try {
       final db = await databaseInstance.database;
